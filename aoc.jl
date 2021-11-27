@@ -7,8 +7,9 @@ input_file = joinpath(@__DIR__, year, "input", "day$(day)")
 if !isfile(input_file)
     mkpath(dirname(input_file))
     println("Downloading input for $year day $day.")
-    session_cookie = read(joinpath(@__DIR__, "session_cookie"), String)
-    if isfile(session_cookie)
+    session_cookie_file = joinpath(@__DIR__, "session_cookie")
+    if isfile(session_cookie_file)
+        session_cookie = read(session_cookie_file, String)
         download("https://adventofcode.com/$(year)/day/$(day)/input",
                  input_file,
                  headers = Dict("cookie" => "session=$(session_cookie)"))
