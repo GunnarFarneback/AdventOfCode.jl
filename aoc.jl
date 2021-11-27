@@ -8,8 +8,13 @@ if !isfile(input_file)
     mkpath(dirname(input_file))
     println("Downloading input for $year day $day.")
     session_cookie = read(joinpath(@__DIR__, "session_cookie"), String)
-    download("https://adventofcode.com/$(year)/day/$(day)/input", input_file,
-             headers = Dict("cookie" => "session=$(session_cookie)"))
+    if isfile(session_cookie)
+        download("https://adventofcode.com/$(year)/day/$(day)/input",
+                 input_file,
+                 headers = Dict("cookie" => "session=$(session_cookie)"))
+    else
+        println("No session cookie available. Download the input file manually and save it to $(input_file)")
+    end
 end
 include(joinpath(@__DIR__, year, "day$(day).jl"))
 if test
