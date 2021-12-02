@@ -35,3 +35,15 @@ to enter test files yourself but the real problem inputs will be
 downloaded automatically if you extract your session cookie from your
 web browser and place it in a file called `session_cookie` at the top
 of your copy of the repository.
+
+## Benchmarking
+
+Add a `--benchmark` argument when calling `aoc.jl` to get the solution
+benchmarked. This measurement is done with `BenchmarkTools` to exclude
+compilation time and the input is provided as an `IOBuffer`,
+i.e. eliminating disk read time.
+
+The two parts are benchmarked separately. When comparing with
+solutions designed to compute both parts in one call, the sum of the
+two parts will include duplicate input parsing and in some cases
+additional repeated calculations.

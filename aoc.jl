@@ -1,8 +1,11 @@
 using Downloads: download
+using BenchmarkTools
 
-length(ARGS) >= 2 || error("Usage: julia aoc.jl YEAR DAY [TEST] [EXTRA_ARGS]")
-year, day = ARGS[1:2]
-test = length(ARGS) > 2
+args = copy(ARGS)
+(benchmark = "--benchmark" in args) && filter!(!=("--benchmark"), args)
+length(args) >= 2 || error("Usage: julia aoc.jl YEAR DAY [TEST] [EXTRA_ARGS] [--benchmark]")
+year, day = args[1:2]
+test = length(args) > 2
 input_file = joinpath(@__DIR__, year, "input", "day$(day)")
 if !isfile(input_file)
     mkpath(dirname(input_file))
@@ -19,17 +22,16 @@ if !isfile(input_file)
 end
 include(joinpath(@__DIR__, year, "day$(day).jl"))
 if test
-    input_file *= ARGS[3]
+    input_file *= args[3]
 end
-if isdefined(Main, :part1)
-    print("Part 1: ")
-    test && print(ARGS[3])
+for part in (part1, part2)
+    part == part2 && println()
+    print("Part ", last(string(part)), ": ")
+    test && print(args[3])
     println()
-    println(part1(input_file, ARGS[4:end]...))
-end
-if isdefined(Main, :part2)
-    print("Part 2: ")
-    test && print(ARGS[3])
-    println()
-    println(part2(input_file, ARGS[4:end]...))
+    println(part(input_file, args[4:end]...))
+    if benchmark
+        data = read(input_file)
+        @btime $(part)(input, args[4:end]...) setup = (input = IOBuffer($data)) evals = 1
+    end
 end
