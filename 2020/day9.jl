@@ -1,18 +1,13 @@
 function part1(input, preamble_length_str = "25")
     preamble_length = parse(Int, preamble_length_str)
     numbers = parse.(Int, readlines(input))
-    for i = (preamble_length + 1):length(numbers)
-        if !is_sum_of_two(numbers[i], numbers[(i - preamble_length):(i - 1)])
-            return numbers[i]
-        end
-    end
-    @assert false
+    return find_invalid(numbers, preamble_length)
 end
 
 function part2(input, preamble_length_str = "25")
     preamble_length = parse(Int, preamble_length_str)
     numbers = parse.(Int, readlines(input))
-    invalid = part1(input, preamble_length_str)
+    invalid = find_invalid(numbers, preamble_length)
     for i = 1:length(numbers)
         partial_sum = numbers[i]
         j = i + 1
@@ -26,6 +21,15 @@ function part2(input, preamble_length_str = "25")
             j += 1
         end
     end
+end
+
+function find_invalid(numbers, preamble_length)
+    for i = (preamble_length + 1):length(numbers)
+        if !is_sum_of_two(numbers[i], numbers[(i - preamble_length):(i - 1)])
+            return numbers[i]
+        end
+    end
+    @assert false
 end
 
 function is_sum_of_two(n, v)
