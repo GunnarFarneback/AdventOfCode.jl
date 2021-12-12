@@ -2,8 +2,9 @@ using Downloads: download
 using BenchmarkTools
 
 args = copy(ARGS)
-(benchmark = "--benchmark" in args) && filter!(!=("--benchmark"), args)
-length(args) >= 2 || error("Usage: julia aoc.jl YEAR DAY [TEST] [EXTRA_ARGS] [--benchmark]")
+benchmark_arg = filter(startswith("--benchmark"), args)
+filter!(!startswith("--benchmark"), args)
+length(args) >= 2 || error("Usage: julia aoc.jl YEAR DAY [TEST] [EXTRA_ARGS] [--benchmark=SUFFIX]")
 year, day = args[1:2]
 test = length(args) > 2
 input_file = joinpath(@__DIR__, year, "input", "day$(day)")
@@ -20,7 +21,12 @@ if !isfile(input_file)
         println("No session cookie available. Download the input file manually and save it to $(input_file)")
     end
 end
-include(joinpath(@__DIR__, year, "day$(day).jl"))
+code_filename = "day$(day).jl"
+if !isempty(benchmark_arg) && occursin("=", only(benchmark_arg))
+    suffix = last(split(only(benchmark_arg), "="))
+    code_filename = "day$(day)$(suffix).jl"
+end
+include(joinpath(@__DIR__, year, code_filename))
 if test
     input_file *= args[3]
 end
@@ -29,9 +35,10 @@ for part in (part1, part2)
     print("Part ", last(string(part)), ": ")
     test && print(args[3])
     println()
-    println(part(input_file, args[4:end]...))
-    if benchmark
-        data = read(input_file)
-        @btime $(part)(input, args[4:end]...) setup = (input = IOBuffer($data)) evals = 1
+    data = read(input_file)
+    println(part(IOBuffer(data), args[4:end]...))
+    if !isempty(benchmark_arg)
+        length(args) < 4 || error("EXTRA_ARGS are not supported for benchmarking (due to interference with measurement).")
+        @btime $(part)(input) setup = (input = IOBuffer($data)) evals = 1
     end
 end
