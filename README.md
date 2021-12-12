@@ -7,6 +7,10 @@ solution first occured to me. You may learn something from reading
 them or you may not. There are no code comments, consider it as part
 of the challenge.
 
+Ok, who can resist doing a bit of optimization? For some problems
+there are alternative versions available, with e.g. a `fast` suffix in
+the filename.
+
 ## Running the Solutions
 
 `julia aoc.jl YEAR DAY [TEST] [EXTRA]`
@@ -15,8 +19,8 @@ Examples:
 
 `julia aoc.jl 2020 1`
 
-Run day 1 of 2020 using the problem input in `2020/input/day1`. See
-next section about input files.
+Run day 1 of 2020 using the code in `2020/day1.jl` and problem input
+in `2020/input/day1`. See next section about input files.
 
 `julia aoc.jl 2020 10 test2`
 
@@ -47,3 +51,10 @@ The two parts are benchmarked separately. When comparing with
 solutions designed to compute both parts in one call, the sum of the
 two parts will include duplicate input parsing and in some cases
 additional repeated calculations.
+
+With a `--benchmark=SUFFIX` argument the code will be loaded from an
+alternative file. E.g.
+```
+julia aoc.jl 2021 3 --benchmark=fast
+```
+will load the code from `2021/day3fast.jl`.
