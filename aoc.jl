@@ -1,6 +1,17 @@
 using Downloads: download
 using BenchmarkTools
 
+function create_template_if_missing(filename)
+    isfile(filename) && return
+    write(filename, """function part1(input)
+
+                       end
+
+                       function part2(input)
+
+                       end""")
+end
+
 args = copy(ARGS)
 benchmark_arg = filter(startswith("--benchmark"), args)
 filter!(!startswith("--benchmark"), args)
@@ -22,6 +33,7 @@ if !isfile(input_file)
     end
 end
 code_filename = "day$(day).jl"
+create_template_if_missing(joinpath(@__DIR__, year, code_filename))
 if !isempty(benchmark_arg) && occursin("=", only(benchmark_arg))
     suffix = last(split(only(benchmark_arg), "="))
     code_filename = "day$(day)$(suffix).jl"
