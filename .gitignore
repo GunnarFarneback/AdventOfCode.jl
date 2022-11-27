@@ -1,2 +1,4 @@
-session_cookie
+session_cookie*
 input
+2021/day[1-9][a-zA-Z]*.jl
+2021/day[1-9][0-9][a-zA-Z]*.jl
