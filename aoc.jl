@@ -14,8 +14,10 @@ end
 
 args = copy(ARGS)
 benchmark_arg = filter(startswith("--benchmark"), args)
+suffix_arg = filter(startswith("--suffix"), args)
 filter!(!startswith("--benchmark"), args)
-length(args) >= 2 || error("Usage: julia aoc.jl YEAR DAY [TEST] [EXTRA_ARGS] [--benchmark=SUFFIX]")
+filter!(!startswith("--suffix"), args)
+length(args) >= 2 || error("Usage: julia aoc.jl YEAR DAY [TEST] [EXTRA_ARGS] [--benchmark=SUFFIX] [--suffix=SUFFIX]")
 year, day = args[1:2]
 test = length(args) > 2
 input_file = joinpath(@__DIR__, year, "input", "day$(day)")
@@ -32,12 +34,14 @@ if !isfile(input_file)
         println("No session cookie available. Download the input file manually and save it to $(input_file)")
     end
 end
-code_filename = "day$(day).jl"
-create_template_if_missing(joinpath(@__DIR__, year, code_filename))
-if !isempty(benchmark_arg) && occursin("=", only(benchmark_arg))
+suffix = ""
+if !isempty(suffix_arg) && occursin("=", only(suffix_arg))
+    suffix = last(split(only(suffix_arg), "="))
+elseif !isempty(benchmark_arg) && occursin("=", only(benchmark_arg))
     suffix = last(split(only(benchmark_arg), "="))
-    code_filename = "day$(day)$(suffix).jl"
 end
+code_filename = "day$(day)$(suffix).jl"
+create_template_if_missing(joinpath(@__DIR__, year, code_filename))
 include(joinpath(@__DIR__, year, code_filename))
 if test
     input_file *= args[3]
